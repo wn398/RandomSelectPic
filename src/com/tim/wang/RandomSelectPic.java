@@ -8,21 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 /**
- * Created by Malcolm on 2016/7/13.
+ * Created by Malcolm Wang on 2016/7/13.
+ * Copyright 2016 Malcolm Inc.
+ * ALL RIGHTS RESERVED.
  */
-public class Scoller {
-    public static final String RANDOM = "随机";
-    public static final String STOP = "停止";
-    public static final String PHOTONAME = "图片名字";
+@SuppressWarnings("FieldCanBeLocal")
+public class RandomSelectPic {
+    private static final String RANDOM = "随机";
+    private static final String STOP = "停止";
+    private static final String PHOTO_NAME = "图片名字";
     private  File dirFile;
-    private  List<Group> groups = new ArrayList<Group>();
+    private final List<Group> groups = new ArrayList<>();
     private  Group selectedGroup;
-    private  Group allPersonGroup = new Group("全部成员");
+    private final Group allPersonGroup = new Group("全部成员");
     private  ImageIcon initIcon;
 
     private  JPanel downPanel ;
-    private  JLabel picLable;
-    private  JPanel panel;
+    private  JLabel picLabel;
     private  JFrame jframe;
     private  JComboBox<Group> jComboBox;
     private  JButton jButton;
@@ -33,17 +35,17 @@ public class Scoller {
     private  JScrollPane rightPanel;
     private  JTextArea jTextArea;
 
-    public  void initComponent(){
+    private void initComponent(){
 
         downPanel = new JPanel();
         initIcon = new ImageIcon(this.getClass().getResource("init.jpg"));
 
-        picLable = new PhotoLabel(initIcon);
+        picLabel = new PhotoLabel(initIcon);
 
         jframe = new JFrame("图片随机抽取器");
-        jComboBox = new JComboBox<Group>();
+        jComboBox = new JComboBox<>();
         jButton = new JButton(RANDOM);
-        nameLabel = new JLabel(PHOTONAME);
+        nameLabel = new JLabel(PHOTO_NAME);
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setForeground(Color.BLUE);
         resetButton = new JButton("重置");
@@ -74,20 +76,19 @@ public class Scoller {
         rightPanel.setBorder(BorderFactory.createTitledBorder("已选图片名称"));
 
         jframe.setLayout(new BorderLayout());
-        jframe.getContentPane().add(picLable,BorderLayout.CENTER);
+        jframe.getContentPane().add(picLabel,BorderLayout.CENTER);
 
         jframe.getContentPane().add(downPanel,BorderLayout.SOUTH);
         jframe.getContentPane().add(rightPanel,BorderLayout.EAST);
 
 
-        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jframe.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
         });
-        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jframe.pack();
         jframe.setSize(new Dimension(500,600));
         jframe.setVisible(true);
@@ -103,7 +104,7 @@ public class Scoller {
                     return;
                 }else if(jButton.getText().equals(RANDOM)){
                     if(dirFile==null){
-                        JOptionPane.showMessageDialog(picLable,"没有文件，请选择文件夹");
+                        JOptionPane.showMessageDialog(picLabel,"没有文件，请选择文件夹");
                         return;
                     }
                     jButton.setText(STOP);
@@ -122,9 +123,9 @@ public class Scoller {
                             if(selectedGroup.getPersons().size()>1){
                                 int index = new Random().nextInt(selectedGroup.getPersons().size());
                                 selectedPerson = selectedGroup.getPersons().get(index);
-                                ((PhotoLabel) picLable).setFile(selectedPerson.getPhoto());
-                                picLable.validate();
-                                picLable.repaint();
+                                ((PhotoLabel) picLabel).setFile(selectedPerson.getPhoto());
+                                picLabel.validate();
+                                picLabel.repaint();
                                 nameLabel.setText(selectedPerson.getName());
                                 nameLabel.repaint();
 
@@ -135,33 +136,33 @@ public class Scoller {
                                 }
                             }else if (selectedGroup.getPersons().size()==1){
                                 selectedPerson = selectedGroup.getPersons().get(0);
-                                ((PhotoLabel) picLable).setFile(selectedPerson.getPhoto());
-                                picLable.validate();
-                                picLable.repaint();
+                                ((PhotoLabel) picLabel).setFile(selectedPerson.getPhoto());
+                                picLabel.validate();
+                                picLabel.repaint();
                                 nameLabel.setText(selectedPerson.getName());
                                 nameLabel.repaint();
-                                JOptionPane.showMessageDialog(picLable,"组内只有1个人了");
+                                JOptionPane.showMessageDialog(picLabel,"组内只有1个人了");
                                 flag = false;
                             }else
                                 {
-                                ((PhotoLabel) picLable).setIcon(initIcon);
-                                picLable.validate();
-                                picLable.repaint();
+                                picLabel.setIcon(initIcon);
+                                picLabel.validate();
+                                picLabel.repaint();
                                 nameLabel.setText("相片名字");
                                 nameLabel.repaint();
-                                JOptionPane.showMessageDialog(picLable,"组内已经没有人了,请增加");
+                                JOptionPane.showMessageDialog(picLabel,"组内已经没有人了,请增加");
                                     jButton.setText(RANDOM);
                                     resetButton.setEnabled(true);
                                 flag = false;
-                            };
+                            }
                         }
 
                         if(selectedGroup.getPersons().size()>0) {
-                            jTextArea.setText(jTextArea.getText()+" \n "+selectedPerson.getName());
+                            jTextArea.setText(jTextArea.getText()+" \n "+ (selectedPerson != null ? selectedPerson.getName() : null));
                             jTextArea.validate();
                             jTextArea.repaint();
-                            picLable.validate();
-                            picLable.repaint();
+                            picLabel.validate();
+                            picLabel.repaint();
                             selectedGroup.getPersons().remove(selectedPerson);
                         }
 
@@ -176,8 +177,10 @@ public class Scoller {
                 JFileChooser chooser = new JFileChooser();
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 int returnVal = chooser.showOpenDialog(item1);
-                dirFile = chooser.getSelectedFile();
-                loadData(dirFile);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    dirFile = chooser.getSelectedFile();
+                    loadData(dirFile);
+                }
             }
         });
 
@@ -193,9 +196,9 @@ public class Scoller {
             public void actionPerformed(ActionEvent e) {
                 jTextArea.setText(null);
 
-                nameLabel.setText(PHOTONAME);
-                ((PhotoLabel)picLable).setFile(null);
-                ((PhotoLabel)picLable).setIcon(initIcon);
+                nameLabel.setText(PHOTO_NAME);
+                ((PhotoLabel) picLabel).setFile(null);
+                picLabel.setIcon(initIcon);
                 loadData(dirFile);
                 selectedGroup = (Group) jComboBox.getSelectedItem();
 
@@ -203,11 +206,11 @@ public class Scoller {
         });
     }
     public static void main (String[] args){
-        Scoller scoller = new Scoller();
-        scoller.initComponent();
+        RandomSelectPic randomSelectPic = new RandomSelectPic();
+        randomSelectPic.initComponent();
     }
 
-    public  void loadData(File dirFile){
+    private void loadData(File dirFile){
         if(null == dirFile){
             return;
         }
@@ -215,24 +218,28 @@ public class Scoller {
         groups.clear();
         allPersonGroup.getPersons().clear();
         groups.add(allPersonGroup);
-        for(File file:groupFile){
-            if(file.isDirectory()){
-                Group group = new Group(file.getName());
-                File[] photos = file.listFiles();
-                for(File photo:photos){
-                    if(Util.isPicture(photo)) {
-                        Person person = new Person(Util.getFileName(photo), photo);
-                        group.getPersons().add(person);
+        if((groupFile != null ? groupFile.length : 0) >0) {
+            for (File file : groupFile) {
+                if (file.isDirectory()) {
+                    Group group = new Group(file.getName());
+                    File[] photos = file.listFiles();
+                    if ((photos != null ? photos.length : 0) > 0) {
+                        for (File photo : photos) {
+                            if (Util.isPicture(photo)) {
+                                Person person = new Person(Util.getFileName(photo), photo);
+                                group.getPersons().add(person);
+                                allPersonGroup.getPersons().add(person);
+                            }
+                        }
+                    }
+                    if (group.getPersons().size() > 0) {
+                        groups.add(group);
+                    }
+                } else {
+                    if (Util.isPicture(file)) {
+                        Person person = new Person(Util.getFileName(file), file);
                         allPersonGroup.getPersons().add(person);
                     }
-                }
-                if(group.getPersons().size()>0) {
-                    groups.add(group);
-                }
-            }else {
-                if(Util.isPicture(file)){
-                    Person person = new Person(Util.getFileName(file),file);
-                    allPersonGroup.getPersons().add(person);
                 }
             }
         }

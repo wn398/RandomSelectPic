@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Malcolm on 2016/7/13.
+ * Created by Malcolm Wang on 2016/7/13.
+ * Copyright 2016 Malcolm Inc.
+ * ALL RIGHTS RESERVED.
  */
 public class Group {
     private String name;

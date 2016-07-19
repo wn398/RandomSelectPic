@@ -3,7 +3,9 @@ package com.tim.wang;
 import java.io.File;
 
 /**
- * Created by Malcolm on 2016/7/16.
+ * Created by Malcolm Wang on 2016/7/16.
+ * Copyright 2016 Malcolm Inc.
+ * ALL RIGHTS RESERVED.
  */
 public class Util {
     public static String getFileName(File file){
